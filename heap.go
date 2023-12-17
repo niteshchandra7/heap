@@ -47,6 +47,7 @@ func (h *Heap) Push(item any) error {
 		h.Container[parent], h.Container[child] = h.Container[child], h.Container[parent]
 		child = parent
 	}
+	fmt.Println(h.Container)
 	return nil
 }
 
@@ -66,16 +67,30 @@ func (h *Heap) Seek() (any, error) {
 // Pop removes the item with highest priority
 func (h *Heap) Pop() {
 	parent := 0
-	for parent < h.Len() {
+	h.Container[parent] = h.Container[h.Len()-1]
+	for parent < h.Len()-1 {
 		child1 := 2*parent + 1
 		child2 := 2*parent + 2
-		if child2 != h.Len() && h.Comp(h.Container[child1], h.Container[child2]) {
-			h.Container[parent] = h.Container[child2]
+		if child1 >= h.Len()-1 {
+			break
+		}
+		if child2 >= h.Len()-1 {
+			if h.Comp(h.Container[child1], h.Container[parent]) == false {
+				h.Container[parent], h.Container[child1] = h.Container[child1], h.Container[parent]
+				parent = child1
+			} else {
+				break
+			}
+		} else if h.Comp(h.Container[child1], h.Container[parent]) == false && h.Comp(h.Container[child1], h.Container[child2]) == false {
+			h.Container[parent], h.Container[child1] = h.Container[child1], h.Container[parent]
+			parent = child1
+		} else if h.Comp(h.Container[child2], h.Container[parent]) == false && h.Comp(h.Container[child2], h.Container[child1]) == false {
+			h.Container[parent], h.Container[child2] = h.Container[child2], h.Container[parent]
 			parent = child2
 		} else {
-			h.Container[parent] = h.Container[child1]
-			parent = child1
+			break
 		}
+
 	}
-	h.Container = h.Container[0:h.Len()]
+	h.Container = h.Container[0 : h.Len()-1]
 }
